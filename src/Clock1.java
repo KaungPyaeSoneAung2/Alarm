@@ -1,14 +1,11 @@
-
 import jaco.mp3.player.MP3Player;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import static java.lang.Thread.sleep;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,13 +15,11 @@ import javax.swing.JTextField;
 
 public class Clock1 extends JFrame {
 
-    private Container c;
-    private Font f, f1, f2, f3, f4;
-    private JLabel jLabel1, jLabel2, jLabel3, jLabel4, imgLabel;
-    private ImageIcon icon;
-    private ImageIcon img, img2, img3;
-    private JTextField tfh, tfm, tfam, tfs;
-    private JButton btnOk, btnStop, btncl;
+    private JLabel jLabel1;
+    private JLabel jLabel2;
+    private JLabel jLabel3;
+    private JLabel jLabel4;
+    private JTextField tfh, tfm, tfam;
 
     public int temp_h, temp_m;
     public String temp_am;
@@ -44,21 +39,20 @@ public class Clock1 extends JFrame {
         this.setBounds(1270, 170, 560, 320);
         this.setTitle("Alarm Clock");
 
-        c = this.getContentPane();
+        Container c = this.getContentPane();
         c.setLayout(null);
         c.setBackground(Color.BLACK);
 
-        f1 = new Font("Arial", Font.BOLD, 20);
-        f2 = new Font("Digital-7 Mono", Font.BOLD, 46);
-        f3 = new Font("Digital-7", Font.PLAIN, 75);
-        f4 = new Font("Monospaced Bold", Font.BOLD, 36);
+        Font f2 = new Font("Digital-7 Mono", Font.BOLD, 46);
+        Font f3 = new Font("Digital-7", Font.PLAIN, 75);
+        Font f4 = new Font("Monospaced Bold", Font.BOLD, 36);
 
-        icon = new ImageIcon(getClass().getResource("alarm-clock.png"));
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("alarm-clock.png")));
         this.setIconImage(icon.getImage());
 
-        img = new ImageIcon(getClass().getResource("marin-kitagawa (1).gif"));
-        imgLabel = new JLabel(img);
-        imgLabel.setBounds(30, 215, 40, 40);
+        ImageIcon img = new ImageIcon(Objects.requireNonNull(getClass().getResource("marin-kitagawa (1).gif")));
+        JLabel imgLabel = new JLabel(img);
+        imgLabel.setBounds(29, 215, 40, 40);
         imgLabel.setBounds(30, 215, 40, 40);
         c.add(imgLabel);
 
@@ -104,52 +98,42 @@ public class Clock1 extends JFrame {
         tfam.setHorizontalAlignment(JTextField.CENTER);
         c.add(tfam);
 
-        btnOk = new JButton("Ok");
+        JButton btnOk = new JButton("Ok");
         btnOk.setBounds(295, 215, 60, 40);
         btnOk.setFont(new Font("Monospaced Bold", Font.BOLD, 16));
         c.add(btnOk);
 
-        btncl = new JButton("Clear");
+        JButton btncl = new JButton("Clear");
         btncl.setBounds(370, 215, 80, 40);
         btncl.setFont(new Font("Monospaced Bold", Font.BOLD, 16));
         c.add(btncl);
 
-        btnStop = new JButton("Stop");
+        JButton btnStop = new JButton("Stop");
         btnStop.setBounds(445+15, 215, 75, 40);
         btnStop.setFont(new Font("Monospaced Bold", Font.BOLD, 16));
         c.add(btnStop);
 
         //Button Ok
-        btnOk.addActionListener(new ActionListener() {
+        btnOk.addActionListener(ae -> {
 
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-
-                temp_h = Integer.parseInt(tfh.getText());
-                temp_m = Integer.parseInt(tfm.getText());
-                temp_am = tfam.getText();
-                flag = 1;
-            }
+            temp_h = Integer.parseInt(tfh.getText());
+            temp_m = Integer.parseInt(tfm.getText());
+            temp_am = tfam.getText();
+            flag = 1;
         });
 
         //Stop Button
-        btnStop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent ae) {
-                flag = 0;
-                mp3.stop();
-            }
+        btnStop.addActionListener(ae -> {
+            flag = 0;
+            mp3.stop();
         });
 
-        btncl.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent ae) {
-                flag = 0;
-                tfh.setText("");
-                tfm.setText("");
-                tfam.setText("");
+        btncl.addActionListener(ae -> {
+            flag = 0;
+            tfh.setText("");
+            tfm.setText("");
+            tfam.setText("");
 
-            }
         });
 
 
@@ -159,63 +143,60 @@ public class Clock1 extends JFrame {
     public void currentTime() {
 
         Thread clock;
-        clock = new Thread() {
+        clock = new Thread(() -> {
 
-            public void run() {
+            for (;;) {
+                Calendar cal = new GregorianCalendar();
 
-                for (;;) {
-                    Calendar cal = new GregorianCalendar();
+                int second = cal.get(Calendar.SECOND);
+                int minute = cal.get(Calendar.MINUTE);
+                int hour = cal.get(Calendar.HOUR);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+                int month = cal.get(Calendar.MONTH) + 1;
+                int year = cal.get(Calendar.YEAR);
 
-                    int second = cal.get(Calendar.SECOND);
-                    int minute = cal.get(Calendar.MINUTE);
-                    int hour = cal.get(Calendar.HOUR);
-                    int day = cal.get(Calendar.DAY_OF_MONTH);
-                    int month = cal.get(Calendar.MONTH) + 1;
-                    int year = cal.get(Calendar.YEAR);
+                //AM_PM
+                Calendar datetime = Calendar.getInstance();
+                String am_pm = "";
+                if (datetime.get(Calendar.AM_PM) == Calendar.AM) {
+                    am_pm = "AM";
+                } else if (datetime.get(Calendar.AM_PM) == Calendar.PM) {
+                    am_pm = "PM";
+                }
 
-                    //AM_PM
-                    Calendar datetime = Calendar.getInstance();
-                    String am_pm = "";
-                    if (datetime.get(Calendar.AM_PM) == Calendar.AM) {
-                        am_pm = "AM";
-                    } else if (datetime.get(Calendar.AM_PM) == Calendar.PM) {
-                        am_pm = "PM";
-                    }
+                //week day
+                String[] strDays = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thusday",
+                        "Friday", "Saturday"};
+                String wd;
+                wd = strDays[datetime.get(Calendar.DAY_OF_WEEK) - 1];
 
-                    //week day
-                    String[] strDays = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thusday",
-                            "Friday", "Saturday"};
-                    String wd;
-                    wd = strDays[datetime.get(Calendar.DAY_OF_WEEK) - 1];
+                //setting to label
+                jLabel1.setText(hour + " : " + minute + " : " + second);
+                jLabel2.setText(day + " - " + month + " - " + year);
+                jLabel3.setText(am_pm);
+                jLabel4.setText(" " + wd);
 
-                    //setting to label
-                    jLabel1.setText(hour + " : " + minute + " : " + second);
-                    jLabel2.setText(day + " - " + month + " - " + year);
-                    jLabel3.setText(am_pm);
-                    jLabel4.setText(" " + wd);
+                //Alarm ---------------
 
-                    //Alarm ---------------
+                if (temp_h == hour && temp_m == minute && temp_am.equals(am_pm) && second==0 && flag == 1) {
+                    mp3.play();
+                }
 
-                    if (temp_h == hour && temp_m == minute && temp_am.equals(am_pm) && second==0 && flag == 1) {
-                        mp3.play();
-                    }
+                if (second == 59 || flag == 0) {
+                    mp3.stop();
 
-                    if (second == 59 || flag == 0) {
-                        mp3.stop();
-
-
-                    }
-
-
-                    try {
-                        sleep(1000);
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null, e);
-                    }
 
                 }
+
+
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+
             }
-        };
+        });
         clock.start();
     }
 
